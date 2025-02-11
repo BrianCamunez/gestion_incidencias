@@ -23,6 +23,7 @@ const Panel = () => {
         <Header/>
       <main className="container mt-5">
         <h1>Administración de incidencias</h1>
+        <button className="btn btn-secondary mt-4" title="Añadir ticket">Añadir ticket</button>
         <h2 className="mt-5">Tickets pendientes</h2>
         <table className="table mt-4">
           <thead>
