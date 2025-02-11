@@ -1,23 +1,10 @@
 import React from 'react';
+import Header from '../components/Header';
 
 const InicioSesion = () => {
   return (
     <>
-      <header>
-        <nav className="navbar navbar-light bg-light">
-          <div className="container-fluid">
-            <a className="navbar-brand">Gestión de incidencias FPLLEFIA</a>
-            <div>
-              <button className="btn btn-secondary ms-2">PANEL</button>
-              <button className="btn btn-secondary ms-2">LOGIN</button>
-              <button className="btn btn-secondary ms-2">REGISTRO</button>
-            </div>
-            <div>
-              <span>administrador@fpllefia.com</span>
-            </div>
-          </div>
-        </nav>
-      </header>
+      <Header/>
       <main className="container mt-5">
         <div className="pt-5">
           <h1 className="w-100 text-center">Login</h1>
