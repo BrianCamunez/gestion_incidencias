@@ -2,6 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
+
+  const sacarDatos = JSON.parse(localStorage.getItem('logeoConfirmado'))
+
+  let emailRegistrado = 'No has iniciado sesión'
+
+  if(sacarDatos){
+    emailRegistrado = sacarDatos.email
+  }
+
     return (
         <header>
       <nav className="navbar navbar-light bg-light">
@@ -13,7 +22,7 @@ const Header = () => {
             <Link to="/registro" className="btn btn-secondary ms-2">REGISTRO</Link>
           </div>
           <div>
-            <span>administrador@fpllefia.com</span>
+          {emailRegistrado}
           </div>
         </div>
       </nav>
