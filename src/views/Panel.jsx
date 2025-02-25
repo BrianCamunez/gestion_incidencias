@@ -1,7 +1,9 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import Header from '../components/Header';
+import TiquetsPendents from '../components/TiquetsPendents';
 import { inicializacionLocalStorage } from '../lib/funciones';
+import TiquetsResolts from '../components/TiquetsResolts';
 
 inicializacionLocalStorage();
 
@@ -40,22 +42,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-            {
-                tickets.filter(ticket => ticket.estado === 'false').map((ticket) => (
-                    <tr key={ticket.codigo}>
-                    <td>{ticket.codigo}</td>
-                    <td>{ticket.fecha}</td>
-                    <td>{ticket.aula}</td>
-                    <td>{ticket.grupo}</td>
-                    <td>{ticket.ordenador}</td>
-                    <td>{ticket.descripcion}</td>
-                    <td>{ticket.alumno}</td>
-                    <td><button className="btn btn-success" title="Resolver ticket">Resolver</button></td>
-                    <td><button className="btn btn-warning" title="Añadir comentario"><i className="bi bi-pencil" data-bs-toggle="modal" data-bs-target="#exampleModal"></i></button></td>
-                    <td><button className="btn btn-info" title="Ver comentarios"><i className="bi bi-chat-left-text"></i></button></td>
-                    <td><button className="btn btn-danger" title="Eliminar ticket"><i className="bi bi-trash3"></i></button></td>
-              </tr>
-            ))}
+            <TiquetsPendents/>
           </tbody>
         </table>
         <h2 className="mt-5">Tickets resueltos</h2>
@@ -73,21 +60,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-          {
-            tickets.filter(ticket => ticket.estado === 'true').map((ticket) => (
-                <tr key={ticket.codigo}>
-                    <td>{ticket.codigo}</td>
-                    <td>{ticket.fecha}</td>
-                    <td>{ticket.fechaResuelto}</td>
-                    <td>{ticket.aula}</td>
-                    <td>{ticket.grupo}</td>
-                    <td>{ticket.ordenador}</td>
-                    <td>{ticket.descripcion}</td>
-                    <td>{ticket.alumno}</td>
-                    <td><button className="btn btn-info" title="Ver comentarios"><i className="bi bi-chat-left-text"></i></button></td>
-                    <td><button className="btn btn-danger" title="Eliminar ticket"><i className="bi bi-trash3"></i></button></td>
-                </tr>
-            ))}
+          <TiquetsResolts/>
           </tbody>
         </table>
       </main>

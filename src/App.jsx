@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Panel from './views/panel';
-import Registro from './views/registro';
-import InicioSesion from './views/inicioSesion';
+import Registro from './components/Registro';
+import InicioSesion from './components/InicioSesion';
 
 
 function App() {
