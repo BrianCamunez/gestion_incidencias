@@ -9,16 +9,30 @@ inicializacionLocalStorage();
 
 const Panel = () => {
 
-    const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState(JSON.parse(localStorage.getItem('dades_tiquets')));
+  // Función para borrar un ticket
+  const borrarTickets = (codigo) => {
+    // Filtrar el ticket por código y actualizar localStorage
+    const ticketsGuardados = [...tickets];
+    const ticketsFiltrados = ticketsGuardados.filter(ticket => ticket.codigo != codigo);
+    // Guardar los tickets filtrados en el localStorage y en el estado
+    localStorage.setItem('dades_tiquets', JSON.stringify(ticketsFiltrados));
+    setTickets(ticketsFiltrados); // Actualizar el estado con los tickets filtrados
+  }
 
-    useEffect(() => {
-        const storedTickets = localStorage.getItem('dades_tiquets');
-        if (storedTickets) {
-          setTickets(JSON.parse(storedTickets));
-        }
-      }, []);
+  const resolverTickets = (codigo) => {
+    
+    const ticketsGuardados = [...tickets];
+    const ticketsActualizados = ticketsGuardados.map(ticket => {
+      if(ticket.codigo === codigo){
+        ticket.estado = 'true';
+        ticket.fechaResuelto = new Date().toLocaleDateString();
+      }
+    })
+    localStorage.setItem('dades_tiquets', JSON.stringify(ticketsActualizados));
+    setTickets(ticketsActualizados);
+  }
 
-    console.log(tickets);
 
   return (
     <>
@@ -42,7 +56,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-            <TiquetsPendents/>
+            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets}/>
           </tbody>
         </table>
         <h2 className="mt-5">Tickets resueltos</h2>
@@ -60,7 +74,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-          <TiquetsResolts/>
+          <TiquetsResolts tickets={tickets} borrarTickets={borrarTickets}/>
           </tbody>
         </table>
       </main>

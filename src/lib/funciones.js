@@ -13,6 +13,7 @@ export const inicializacionLocalStorage = () => {
         localStorage.setItem('dades_tiquets', JSON.stringify(datos_tiquets));
     }
 
+    localStorage.setItem('dades_tiquets', JSON.stringify(datos_tiquets));
 
     const datos_usuarios = [
         { usuario: 'Ana', apellido: 'Martínez', password: '123456', rol: 'alumno', email: 'anamartinez@gmail.com' },
