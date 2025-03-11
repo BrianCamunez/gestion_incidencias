@@ -23,12 +23,16 @@ const Panel = () => {
   const resolverTickets = (codigo) => {
     
     const ticketsGuardados = [...tickets];
+    console.log(ticketsGuardados)
     const ticketsActualizados = ticketsGuardados.map(ticket => {
-      if(ticket.codigo === codigo){
+      if(ticket.codigo == codigo){
         ticket.estado = 'true';
         ticket.fechaResuelto = new Date().toLocaleDateString();
+        console.log("cambio a resuleto")
       }
+      return ticket
     })
+    console.log(ticketsActualizados)
     localStorage.setItem('dades_tiquets', JSON.stringify(ticketsActualizados));
     setTickets(ticketsActualizados);
   }
@@ -56,7 +60,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets}/>
+            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets}resolverTickets={resolverTickets}/>
           </tbody>
         </table>
         <h2 className="mt-5">Tickets resueltos</h2>
