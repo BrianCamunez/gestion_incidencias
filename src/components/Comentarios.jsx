@@ -1,14 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
+
+import { Comentario } from './comentario';
 import { useParams } from 'react-router-dom';
 
 
 
 export const Comentarios = () => {
   const { id } = useParams();
+
+  useEffect(() => {
+    const ticketsGuardados = JSON.parse(localStorage.getItem("dades_tiquets"))
+    const ticketEntrado = ticketsGuardados.find(ticket => ticket.codigo === id)
+    if(ticketEntrado) {
+      setComentarios(ticketEntrado.comentarios || [])
+    }
+  },[id])
+
+  const [comentarios, setComentarios] = useState([]);
+
+  const actualizarComentarios = (nuevoComentario) => {
+    const comentariosActualizados = [...comentarios, nuevoComentario]
+    setComentarios(comentariosActualizados)
+    //-------------------------------------------
+   const ticketsGuardados = JSON.parse(localStorage.getItem("dades_tiquets"));
+  const ticketEntrado = ticketsGuardados.find(ticket => ticket.codigo === id);
+// Actualizar los comentarios del ticket encontrado
+ticketEntrado.comentarios = comentariosActualizados;
+// Actualizar el ticket en el array sin modificar los demás tickets
+const ticketsActualizados = ticketsGuardados.map(ticket => 
+  ticket.codigo === id ? { ...ticket, ...ticketEntrado } : ticket
+);
+// Si necesitas guardar el array actualizado en el localStorage
+localStorage.setItem("dades_tiquets", JSON.stringify(ticketsActualizados));
+  }
+
   return (
     <>
-      <Header />
       <main className="container mt-5">
         <div className="d-flex">
           <h1>Comentarios</h1><button className="btn btn-link ms-auto"> Volver </button>
@@ -17,23 +44,21 @@ export const Comentarios = () => {
 
         <h2 className="my-4">Código ticket: <span>{id}</span></h2>
         <div>
-          <form action="" className="form card p-3 shadow">
-            <label htmlFor="comentario" className="form-label">Comentario: </label>
-            <textarea className="form-control" cols="3"></textarea>
-            <label htmlFor="fecha" className="form-label me-2 mt-3">Fecha: </label>
-            <div className="d-flex align-items-center">
-              <input type="datetime-local" className="form-control w-25" />
-              <button className="btn btn-success ms-auto">Añadir comentario</button>
-            </div>
-          </form>
-
+          <Comentario onSubmit={actualizarComentarios}></Comentario>
           <div className="mt-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="card p-3 mt-2">
-                <h5 className="text-end">Autor: <span>Javier Caraculo</span><span className="ms-4">12/10/2022</span></h5>
-                <p>Este es un comentario Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit amet dignissimos laudantium blanditiis fuga recusandae sed culpa, earum pariatur repellat esse provident eaque totam quo sint iste, inventore deleniti quis.</p>
+          <h1>Comentarios</h1>
+          {comentarios.length > 0 ? (
+            comentarios.map((comentario, index) => (
+              <div key={index} className="card mb-3">
+                <div className="card-body">
+                  <p>{comentario.coment}</p>
+                  <p className="small text-end">Fecha: {comentario.fechaActual}</p>
+                </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <p>No hay comentarios para este ticket.</p>
+          )}
           </div>
         </div>
       </main>

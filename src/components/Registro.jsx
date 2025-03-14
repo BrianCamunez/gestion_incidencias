@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 
 const Registro = () => {
@@ -29,8 +28,6 @@ const Registro = () => {
     const nuevoUsuario = { usuario: nombre, apellido: apellido, password: contrasena, rol: 'alumno', email: email }
 
     usuariosGuardados.push(nuevoUsuario)
-    
-    console.log(usuariosGuardados)
 
     localStorage.setItem('dades_usuaris', JSON.stringify(usuariosGuardados))
 
@@ -42,7 +39,6 @@ const Registro = () => {
 
   return (
     <>
-        <Header/>
       <main className="container mt-5">
         <div className="pt-5">
           <h1 className="w-100 text-center">Registro</h1>

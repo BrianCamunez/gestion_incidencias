@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
 import { useNavigate } from 'react-router-dom'
 
 const InicioSesion = () => {
@@ -54,7 +53,6 @@ const InicioSesion = () => {
   if(logeado){
     return(
       <>
-        <Header />
         <main className="container mt-5">
           <h1 className="w-100 text-center">Bienvenido!</h1>
           <button className="btn btn-danger" onClick={logout}>Cerrar sesión</button>
@@ -65,7 +63,6 @@ const InicioSesion = () => {
 
   return (
     <>
-      <Header />
       <main className="container mt-5">
         <div className="pt-5">
           <h1 className="w-100 text-center">Login</h1>
