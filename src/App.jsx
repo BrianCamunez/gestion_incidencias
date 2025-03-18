@@ -6,6 +6,7 @@ import InicioSesion from './components/InicioSesion';
 import Comentarios from './components/Comentarios';
 import NuevoTicket from './components/NuevoTicket';
 import  Header from './components/Header'
+import Usuario from "./components/Usuario"
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/registro" element={<Registro />} />
           <Route path="/comentarios/:id" element={<Comentarios />} />
           <Route path="/nuevoTicket" element={<NuevoTicket/>}/>
+          <Route path="/Usuario" element={<Usuario/>}/>
         </Routes>
       </Router>
     </>

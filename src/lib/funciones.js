@@ -14,19 +14,19 @@ export const inicializacionLocalStorage = () => {
     }
 
     const datos_usuarios = [
-        { usuario: 'Ana', apellido: 'Martínez', password: '123456', rol: 'alumno', email: 'anamartinez@gmail.com' },
-        { usuario: 'Pedro', apellido: 'Gómez', password: '123456', rol: 'alumno', email: 'pedrogomez@gmail.com' },
-        { usuario: 'Sofía', apellido: 'Fernández', password: '123456', rol: 'alumno', email: 'sofiafernandez@gmail.com' },
-        { usuario: 'Luis', apellido: 'Torres', password: '123456', rol: 'alumno', email: 'luistorres@gmail.com' },
-        { usuario: 'Carolina', apellido: 'Ramírez', password: '123456', rol: 'alumno', email: 'carolinaramirez@gmail.com' },
-        { usuario: 'Juan', apellido: 'Rodríguez', password: '123456', rol: 'alumno', email: 'juanrodriguez@gmail.com' },
-        { usuario: 'Laura', apellido: 'Martínez', password: '123456', rol: 'alumno', email: 'lauramartinez@gmail.com' },
-        { usuario: 'Carlos', apellido: 'Arrebola', password: '123456', rol: 'profesor', email: 'carlosarrebola@gmail.com' },
-        { usuario: 'Brian', apellido: 'Camuñez', password: '123456', rol: 'admin', email: 'briancamunez@gmail.com' }
+        { id: "1", usuario: 'Ana', apellido: 'Martínez', password: '123456', rol: 'alumno', email: 'anamartinez@gmail.com' },
+        { id: "2", usuario: 'Pedro', apellido: 'Gómez', password: '123456', rol: 'alumno', email: 'pedrogomez@gmail.com' },
+        { id: "3", usuario: 'Sofía', apellido: 'Fernández', password: '123456', rol: 'alumno', email: 'sofiafernandez@gmail.com' },
+        { id: "4", usuario: 'Luis', apellido: 'Torres', password: '123456', rol: 'alumno', email: 'luistorres@gmail.com' },
+        { id: "5", usuario: 'Carolina', apellido: 'Ramírez', password: '123456', rol: 'alumno', email: 'carolinaramirez@gmail.com' },
+        { id: "6", usuario: 'Juan', apellido: 'Rodríguez', password: '123456', rol: 'alumno', email: 'juanrodriguez@gmail.com' },
+        { id: "7", usuario: 'Laura', apellido: 'Martínez', password: '123456', rol: 'alumno', email: 'lauramartinez@gmail.com' },
+        { id: "8", usuario: 'Carlos', apellido: 'Arrebola', password: '123456', rol: 'profesor', email: 'carlosarrebola@gmail.com' },
+        { id: "9", usuario: 'Brian', apellido: 'Camuñez', password: '123456', rol: 'admin', email: 'briancamunez@gmail.com' }
     ];
 
     if (!localStorage.getItem('dades_usuaris')) {
         localStorage.setItem('dades_usuaris', JSON.stringify(datos_usuarios));
     }
-
+    
 }

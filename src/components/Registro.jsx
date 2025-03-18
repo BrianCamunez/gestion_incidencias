@@ -25,7 +25,7 @@ const Registro = () => {
       return;
     }
 
-    const nuevoUsuario = { usuario: nombre, apellido: apellido, password: contrasena, rol: 'alumno', email: email }
+    const nuevoUsuario = { id: String(usuariosGuardados.length + 1) ,usuario: nombre, apellido: apellido, password: contrasena, rol: 'alumno', email: email }
 
     usuariosGuardados.push(nuevoUsuario)
 
