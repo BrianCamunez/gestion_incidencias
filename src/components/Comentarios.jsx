@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Comentario } from './comentario';
+import { Comentario } from './Comentario';
 import { useParams } from 'react-router-dom';
 
 
