@@ -1,9 +1,10 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import Header from '../components/Header';
 import TiquetsPendents from '../components/TiquetsPendents';
 import { inicializacionLocalStorage } from '../lib/funciones';
 import TiquetsResolts from '../components/TiquetsResolts';
+
+import { Link } from 'react-router-dom'
 
 inicializacionLocalStorage();
 
@@ -21,18 +22,14 @@ const Panel = () => {
   }
 
   const resolverTickets = (codigo) => {
-    
     const ticketsGuardados = [...tickets];
-    console.log(ticketsGuardados)
     const ticketsActualizados = ticketsGuardados.map(ticket => {
-      if(ticket.codigo == codigo){
+      if (ticket.codigo == codigo) {
         ticket.estado = 'true';
         ticket.fechaResuelto = new Date().toLocaleDateString();
-        console.log("cambio a resuleto")
       }
       return ticket
     })
-    console.log(ticketsActualizados)
     localStorage.setItem('dades_tiquets', JSON.stringify(ticketsActualizados));
     setTickets(ticketsActualizados);
   }
@@ -40,10 +37,9 @@ const Panel = () => {
 
   return (
     <>
-        <Header/>
       <main className="container mt-5">
         <h1>Administración de incidencias</h1>
-        <button className="btn btn-secondary mt-4" title="Añadir ticket">Añadir ticket</button>
+        <Link to={`/nuevoTicket`}><button className="btn btn-secondary mt-4" title="Añadir ticket">Añadir ticket</button></Link>
         <h2 className="mt-5">Tickets pendientes</h2>
         <table className="table mt-4">
           <thead>
@@ -60,7 +56,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets}resolverTickets={resolverTickets}/>
+            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets} resolverTickets={resolverTickets} />
           </tbody>
         </table>
         <h2 className="mt-5">Tickets resueltos</h2>
@@ -78,7 +74,7 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-          <TiquetsResolts tickets={tickets} borrarTickets={borrarTickets}/>
+            <TiquetsResolts tickets={tickets} borrarTickets={borrarTickets} />
           </tbody>
         </table>
       </main>
