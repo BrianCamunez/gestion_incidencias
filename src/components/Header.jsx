@@ -10,10 +10,12 @@ const Header = () => {
 
   let emailRegistrado = 'No has iniciado sesión'
   let cerrarSesion = false
+  let rolUsuario = ""
 
   if(sacarDatos){
     emailRegistrado = sacarDatos.email
     cerrarSesion = true
+    rolUsuario = sacarDatos.rol
   }
 
   const logout = () => {
@@ -39,6 +41,13 @@ const Header = () => {
               <>
                 <button className="btn btn-danger ms-2" onClick={logout}>Cerrar sesión</button>
               </>
+            )}
+            {rolUsuario == "admin" ? (
+                <>
+                  <Link to="/Usuario" className="btn btn-secondary ms-2">Panel Usuarios</Link>
+                </>
+            ) : (
+              ''
             )}
           </div>
           <div>
