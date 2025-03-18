@@ -1,8 +1,24 @@
+import React, { useState } from 'react';
+
 const Usuario = () => {
 
-    const datosUsuarios = JSON.parse(localStorage.getItem("dades_usuaris"))
+    const [usuarios, setUsuarios] = useState(JSON.parse(localStorage.getItem("dades_usuaris")))
 
-    console.log(datosUsuarios)
+
+    const cambiarRol = (idUsuario, rolNuevo) =>{
+
+        const datosGuardados = [...usuarios]
+        const usuariosActualizados = datosGuardados.map(usuario =>{
+            if(usuario.id == idUsuario){
+                usuario.rol = rolNuevo
+            }
+            return usuario
+        })
+        localStorage.setItem("dades_usuaris", JSON.stringify(usuariosActualizados))
+        setUsuarios(usuariosActualizados)
+
+    }
+
 
     return (
        <div style={{justifyContent: "center", display: "flex", marginTop: "50px"}}>
@@ -18,14 +34,20 @@ const Usuario = () => {
                 </tr>
             </thead>
             <tbody>
-            {datosUsuarios && datosUsuarios.map((usuario, index) => (
+            {usuarios && usuarios.map((usuario, index) => (
                         <tr key={index}>
-                            <th scope="row">{index + 1}</th>
+                            <th scope="row">{usuario.id}</th>
                             <td>{usuario.usuario}</td>
                             <td>{usuario.apellido}</td>
                             <td>{usuario.email}</td>
                             <td>{usuario.password}</td>
-                            <td>{usuario.rol}</td>
+                            <td>
+                                <select value={usuario.rol} style={{width: "100%"}} onChange={(evento) => cambiarRol(usuario.id, evento.target.value)}>
+                                    <option value="alumno">Alumno</option>
+                                    <option value="profesor">Profesor</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </td>
                         </tr>
                     ))}
             </tbody>
