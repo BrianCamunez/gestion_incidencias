@@ -1,84 +1,146 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabase/auth';
+
+// const [nombre, setNombre] = useState('')
+// const [apellido, setApellido] = useState('')
+// const [email, setEmail] = useState('')
+// const [contrasena, setContrasena] = useState('')
+
+// const [mensajeError, setMensajeError] = useState('');
+
+// const [loading, setLoading] = useState(false)
+
+// const navigate = useNavigate();
+
+// const mirarRegistro = (evento) => {
+
+//   evento.preventDefault()
+
+//   const usuariosGuardados = JSON.parse(localStorage.getItem('dades_usuaris'))
+
+//   const usuariosExistentes = usuariosGuardados.some(usuario => usuario.email === email)
+
+//   if(usuariosExistentes){
+//     setMensajeError('El correo ya esta registrado');
+//     return;
+//   }
+
+//   const nuevoUsuario = { id: String(usuariosGuardados.length + 1) ,usuario: nombre, apellido: apellido, password: contrasena, rol: 'alumno', email: email }
+
+//   usuariosGuardados.push(nuevoUsuario)
+
+//   localStorage.setItem('dades_usuaris', JSON.stringify(usuariosGuardados))
+
+//   localStorage.setItem('logeoConfirmado', JSON.stringify({email:nuevoUsuario.email, rol: nuevoUsuario.rol}))
+
+//   navigate('/panel')
+
 
 const Registro = () => {
-
-  const [nombre, setNombre] = useState('')
-  const [apellido, setApellido] = useState('')
-  const [email, setEmail] = useState('')
-  const [contrasena, setContrasena] = useState('')
-
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [email, setEmail] = useState('');
+  const [contrasena, setContrasena] = useState('');
   const [mensajeError, setMensajeError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  console.log(nombre);
 
   const navigate = useNavigate();
 
-  const mirarRegistro = (evento) => {
+  const manejarRegistro = async (evento) => {
+    evento.preventDefault();
+    setMensajeError('');
+    setLoading(true);
 
-    evento.preventDefault()
+    try {
+      // Usamos Supabase Auth para registrar al usuario (sin hacer hash de la contraseña)
+      const { user, error } = await supabase.auth.signUp({
+        email: email,
+        password: contrasena, // Usamos la contraseña tal cual (Supabase se encarga de hashearla internamente para la autenticación)
+      });
 
-    const usuariosGuardados = JSON.parse(localStorage.getItem('dades_usuaris'))
+      if (error) {
+        setMensajeError(error.message);
+      } else {
+        // Insertamos los datos adicionales del usuario en la tabla "users" (incluyendo la contraseña sin hacerle hash)
+        const { data, error: insertError } = await supabase
+          .from('users')
+          .insert([
+            {
+              nombre: nombre,
+              apellido: apellido,
+              email: email,
+              password: contrasena,  // Almacenamos la contraseña sin hashear
+            },
+          ]);
 
-    const usuariosExistentes = usuariosGuardados.some(usuario => usuario.email === email)
+        console.log(user);
+        console.log(data);
 
-    if(usuariosExistentes){
-      setMensajeError('El correo ya esta registrado');
-      return;
+        if (insertError) {
+          setMensajeError('Hubo un problema al guardar los datos adicionales.' + JSON.stringify(insertError));
+        } else {
+          console.log('Usuario registrado y datos guardados:', data);
+          alert('¡Registro exitoso! Te hemos enviado un correo de verificación.');
+          navigate('/panel');  // Redirige al usuario al panel
+        }
+      }
+    } catch (error) {
+      setMensajeError('Hubo un problema con el registro.');
+      console.error(error);
     }
 
-    const nuevoUsuario = { id: String(usuariosGuardados.length + 1) ,usuario: nombre, apellido: apellido, password: contrasena, rol: 'alumno', email: email }
-
-    usuariosGuardados.push(nuevoUsuario)
-
-    localStorage.setItem('dades_usuaris', JSON.stringify(usuariosGuardados))
-
-    localStorage.setItem('logeoConfirmado', JSON.stringify({email:nuevoUsuario.email, rol: nuevoUsuario.rol}))
-
-    navigate('/panel')
-
-  }
+    setLoading(false);
+  };
 
   return (
-    <>
-      <main className="container mt-5">
-        <div className="pt-5">
-          <h1 className="w-100 text-center">Registro</h1>
-          <form action="" className="form p-4 border shadow bordered mt-5 mx-auto" style={{ width: '400px' }} onSubmit={mirarRegistro}>
-            <label htmlFor="nombre" className="mt-2 form-label">Nombre: </label>
-            <input type="text" className="form-control" placeholder="Tu nombre" value={nombre} onChange={(evento) => setNombre(evento.target.value)}/>
-            <label htmlFor="apellido" className="mt-2 form-label">Apellido: </label>
-            <input type="text" className="form-control" placeholder="Tu apellido" value={apellido} onChange={(evento) => setApellido(evento.target.value)}/>
-            <label htmlFor="email" className="mt-2 form-label">User: </label>
-            <input type="email" className="form-control" placeholder="usuario@mail.com"  value={email} onChange={(evento) => setEmail(evento.target.value)}/>
-            <label htmlFor="pass" className="mt-2 form-label">Contraseña: </label>
-            <input type="password" className="form-control" value={contrasena} onChange={(evento) => setContrasena(evento.target.value)}/>
-            <input type="submit" className="mt-4 w-100 btn btn-primary" value="Entrar" id="enviar" />
-          </form>
-          {mensajeError && <div className="text-danger mt-3">{mensajeError}</div>}
-        </div>
-      </main>
-      <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Observaciones</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              <p>Código incidencia: <span>123546</span></p>
-              <label htmlFor="comentario" className="form-label">Comentario:</label>
-              <input className="form-control" defaultValue="Este es un comentario sobre esta incidencia" />
-              <p className="small text-end">Autor: <span>Pepe Loco</span></p>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="button" className="btn btn-primary">Guardar cambios</button>
-            </div>
-          </div>
-        </div>
+    <main className="container mt-5">
+      <div className="pt-5">
+        <h1 className="w-100 text-center">Registro</h1>
+        <form className="form p-4 border shadow bordered mt-5 mx-auto" style={{ width: '400px' }} onSubmit={manejarRegistro}>
+          <label htmlFor="nombre" className="mt-2 form-label">Nombre: </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Tu nombre"
+            value={nombre}
+            onChange={(evento) => setNombre(evento.target.value)}
+          />
+          <label htmlFor="apellido" className="mt-2 form-label">Apellido: </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Tu apellido"
+            value={apellido}
+            onChange={(evento) => setApellido(evento.target.value)}
+          />
+          <label htmlFor="email" className="mt-2 form-label">Email: </label>
+          <input
+            type="email"
+            className="form-control"
+            placeholder="usuario@mail.com"
+            value={email}
+            onChange={(evento) => setEmail(evento.target.value)}
+          />
+          <label htmlFor="pass" className="mt-2 form-label">Contraseña: </label>
+          <input
+            type="password"
+            className="form-control"
+            value={contrasena}
+            onChange={(evento) => setContrasena(evento.target.value)}
+          />
+          <input
+            type="submit"
+            className="mt-4 w-100 btn btn-primary"
+            value={loading ? 'Registrando...' : 'Registrar'}
+            disabled={loading}
+          />
+        </form>
+        {mensajeError && <div className="text-danger mt-3">{mensajeError}</div>}
       </div>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    </>
+    </main>
   );
 };
 
