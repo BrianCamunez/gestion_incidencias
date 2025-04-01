@@ -1,14 +1,38 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import TiquetsPendents from '../components/TiquetsPendents';
-import { inicializacionLocalStorage } from '../lib/funciones';
 import TiquetsResolts from '../components/TiquetsResolts';
+import { supabase } from '../supabase/auth';
 
 import { Link } from 'react-router-dom'
 
-inicializacionLocalStorage();
-
 const Panel = () => {
+
+  const [tiquets, setTiquets] = useState([])
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const obtenerTiquets = async () => {
+      try {
+        // Realizamos la consulta a la base de datos
+        let { data, error } = await supabase
+          .from('tiquets')
+          .select('*');
+
+        if (error) {
+          setError(error.message);
+        } else {
+          setTiquets(data);
+        }
+      } catch (err) {
+        setError('Hubo un problema al obtener los tiquets: ' + err.message);
+      }
+    };
+
+    obtenerTiquets();
+  }, []);
+
+  console.log(tiquets)
 
   const [tickets, setTickets] = useState(JSON.parse(localStorage.getItem('dades_tiquets')));
   // Función para borrar un ticket
