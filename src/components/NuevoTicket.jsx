@@ -19,7 +19,6 @@ const NuevoTicket = () => {
 
         const tiquetsGuardados = JSON.parse(localStorage.getItem('dades_tiquets'))
 
-
         const ticketNuevo = {codigo: String(tiquetsGuardados.length + 1), fecha:  fecha, fechaResuelto: null, aula: aula, grupo: grupo, ordenador: ordenador, descripcion: descripcion, alumno: alumno, estado: "false", comentarios: []}
 
         tiquetsGuardados.push(ticketNuevo)
@@ -29,7 +28,6 @@ const NuevoTicket = () => {
         navigate('/panel')
 
     }
-
 
     return (
         <>

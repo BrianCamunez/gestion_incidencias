@@ -2,41 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase/auth';
 
-// const [nombre, setNombre] = useState('')
-// const [apellido, setApellido] = useState('')
-// const [email, setEmail] = useState('')
-// const [contrasena, setContrasena] = useState('')
-
-// const [mensajeError, setMensajeError] = useState('');
-
-// const [loading, setLoading] = useState(false)
-
-// const navigate = useNavigate();
-
-// const mirarRegistro = (evento) => {
-
-//   evento.preventDefault()
-
-//   const usuariosGuardados = JSON.parse(localStorage.getItem('dades_usuaris'))
-
-//   const usuariosExistentes = usuariosGuardados.some(usuario => usuario.email === email)
-
-//   if(usuariosExistentes){
-//     setMensajeError('El correo ya esta registrado');
-//     return;
-//   }
-
-//   const nuevoUsuario = { id: String(usuariosGuardados.length + 1) ,usuario: nombre, apellido: apellido, password: contrasena, rol: 'alumno', email: email }
-
-//   usuariosGuardados.push(nuevoUsuario)
-
-//   localStorage.setItem('dades_usuaris', JSON.stringify(usuariosGuardados))
-
-//   localStorage.setItem('logeoConfirmado', JSON.stringify({email:nuevoUsuario.email, rol: nuevoUsuario.rol}))
-
-//   navigate('/panel')
-
-
 const Registro = () => {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -72,7 +37,7 @@ const Registro = () => {
               nombre: nombre,
               apellido: apellido,
               email: email,
-              password: contrasena,  // Almacenamos la contraseña sin hashear
+              password: contrasena, 
             },
           ]);
 

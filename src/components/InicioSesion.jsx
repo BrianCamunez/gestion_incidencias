@@ -1,57 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../supabase/auth';
 
 const InicioSesion = () => {
 
   const [email, setEmail] = useState('')
-  const [constrasena, setContrasena] = useState('')
+  const [contrasena, setContrasena] = useState('')
   const [mensajeError, setMensajeError] = useState('')
   const [logeado, setLogeado] = useState(false)
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    mirarLogeo()
+  }, [])
 
   const mirarLogeo = () => {
     const logeoConfirmado = localStorage.getItem('logeoConfirmado')
-    if(logeoConfirmado){
+    if (logeoConfirmado) {
       setLogeado(true)
     }
   }
 
-  const comprobarLogin = (evento) => {
+  const comprobarLogin = async (evento) => {
+
     evento.preventDefault()
 
-    const usuariosGuardados = JSON.parse(localStorage.getItem('dades_usuaris'))
+    let { data: users, error } = supabase.from('users').select("email").eq('email', email).single()
 
-    const usuario = usuariosGuardados.find(usuario => usuario.email === email)
+    const { user } = await supabase.auth.signInWithPassword({
+      email,
+      password: contrasena,
+    });
 
-    if(usuario){
-      if(usuario.password === constrasena){
-
-        localStorage.setItem('logeoConfirmado', JSON.stringify({email, rol: usuario.rol}))
-
-        setLogeado(true)
-        setMensajeError('')
-        navigate('/panel')
-      }else{
-        setMensajeError('Contraseña incorrecta')
-      }
-    }else{
-      setMensajeError('El usuario no existe')
+    if (error) {
+      setMensajeError(error.message);
     }
+
+    let { data: rol, eror } = await supabase.from('users').select('rol').eq('email', email).single()
+
+    localStorage.setItem('logeoConfirmado', JSON.stringify({ email, rol: rol.rol }));
+
+    setLogeado(true);
+    setMensajeError('');
+    navigate('/panel');
   }
 
-  const logout = () => {
-    localStorage.removeItem('logeoConfirmado')
-    setLogeado(false)
-    console.log('logout')
+  const logout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem('logeoConfirmado');
+    setLogeado(false);
+    console.log('logout');
   }
 
-  useEffect(() => {
-    mirarLogeo()
-  },[])
 
-  if(logeado){
-    return(
+  if (logeado) {
+    return (
       <>
         <main className="container mt-5">
           <h1 className="w-100 text-center">Bienvenido!</h1>
@@ -68,19 +72,19 @@ const InicioSesion = () => {
           <h1 className="w-100 text-center">Login</h1>
           <form className="form p-4 border shadow bordered mt-5 mx-auto" style={{ width: '400px' }} onSubmit={comprobarLogin}>
             <label htmlFor="email" className="mt-2 form-label">User: </label>
-            <input 
-              type="text" 
-              className="form-control" 
-              placeholder="usuario@mail.com" 
+            <input
+              type="text"
+              className="form-control"
+              placeholder="usuario@mail.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} 
+              onChange={(e) => setEmail(e.target.value)}
             />
             <label htmlFor="pass" className="mt-2 form-label">Contraseña: </label>
-            <input type="password" className="form-control" value={constrasena} onChange={(e) => setContrasena(e.target.value)} />
-            <input 
-              type="submit" 
-              className="mt-4 w-100 btn btn-primary" 
-              value="Entrar" 
+            <input type="password" className="form-control" value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
+            <input
+              type="submit"
+              className="mt-4 w-100 btn btn-primary"
+              value="Entrar"
             />
           </form>
           {mensajeError && <div className="text-danger mt-3">{mensajeError}</div>}
