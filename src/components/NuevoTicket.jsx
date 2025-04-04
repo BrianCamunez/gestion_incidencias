@@ -1,31 +1,67 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabase/auth';
 
 const NuevoTicket = () => {
 
+    const [users, setUsers] = useState([]); 
     const [alumno, setAlumno] = useState()
-    const[fecha, setFecha] = useState()
+    const [fecha, setFecha] = useState()
     const [aula, setAula] = useState()
     const [grupo, setGrupo] = useState()
     const [ordenador, setOrdenador] = useState()
     const [descripcion, setDescripcion] = useState()
+    const [error, setError] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
 
     const navigate = useNavigate();
 
-    const mirarRegistro = (evento) => {
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const { data, error } = await supabase
+                .from('users')
+                .select('id_user, nombre'); // Traemos el 'id_user' y 'nombre'
 
-        evento.preventDefault()
+            if (error) {
+                setError('Error al obtener los usuarios: ' + error.message);
+            } else {
+                setUsers(data); // Guardamos los usuarios en el estado
+            }
+        };
 
-        const tiquetsGuardados = JSON.parse(localStorage.getItem('dades_tiquets'))
+        fetchUsers();
+    }, []);
 
-        const ticketNuevo = {codigo: String(tiquetsGuardados.length + 1), fecha:  fecha, fechaResuelto: null, aula: aula, grupo: grupo, ordenador: ordenador, descripcion: descripcion, alumno: alumno, estado: "false", comentarios: []}
+    const mirarRegistro = async (evento) => {
 
-        tiquetsGuardados.push(ticketNuevo)
+        evento.preventDefault();
 
-        localStorage.setItem("dades_tiquets", JSON.stringify(tiquetsGuardados))
+        try {
+            // Insertar el nuevo tiquet sin usar el 'id_alumno'
+            const { data, error } = await supabase
+                .from('tiquets')
+                .insert([
+                    {
+                        id_alumno: selectedUser,
+                        fecha,
+                        aula,
+                        grupo,
+                        ordenador,
+                        descripcion,
+                        estado: false,
+                    }
+                ]);
 
-        navigate('/panel')
+            if (error) {
+                setError('Error al añadir el tiquet: ' + error.message);
+            } else {
+                // Redirigir al panel si todo va bien
+                navigate('/panel');
+            }
+        } catch (err) {
+            setError('Error inesperado: ' + err.message);
+        }
 
     }
 
@@ -36,9 +72,16 @@ const NuevoTicket = () => {
                     <h1 className="w-100 text-center">Nuevo ticket</h1>
                     <form action="" className="form p-4 border shadow bordered mt-5 mx-auto" style={{ width: '500px' }} onSubmit={mirarRegistro}>
                         <label htmlFor="alumno" className="mt-2 form-label">Alumno: </label>
-                        <input type="text" className="form-control" placeholder='Nombre del alumno' value={alumno} onChange={(evento) => setAlumno(evento.target.value)} />
+                        <select className="form-control" value={selectedUser || ''} onChange={(e) => setSelectedUser(e.target.value)}>
+                            <option value="">Selecciona un alumno</option>
+                            {users.map(user => (
+                                <option key={user.id_user} value={user.id_user}>
+                                    {user.nombre}
+                                </option>
+                            ))}
+                        </select>
                         <label htmlFor="fecha" className="mt-2 form-label">Fecha: </label>
-                        <input type="date" className="form-control w-50" value={fecha} onChange={(evento) => setFecha(evento.target.value)}/>
+                        <input type="date" className="form-control w-50" value={fecha} onChange={(evento) => setFecha(evento.target.value)} />
                         <label htmlFor="aula" className="mt-2 form-label">Aula: </label>
                         <input type="text" className="form-control" placeholder="Aula" value={aula} onChange={(evento) => setAula(evento.target.value)} />
                         <label htmlFor="grupo" className="mt-2 form-label">Grupo: </label>

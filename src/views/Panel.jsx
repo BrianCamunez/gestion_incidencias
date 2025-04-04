@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { use } from 'react';
 import { useState, useEffect } from 'react';
-import TiquetsPendents from '../components/TiquetsPendents';
-import TiquetsResolts from '../components/TiquetsResolts';
+// import TiquetsPendents from '../components/TiquetsPendents';
+// import TiquetsResolts from '../components/TiquetsResolts';
 import { supabase } from '../supabase/auth';
-
 import { Link } from 'react-router-dom'
+import TiquetsPendentsSupabase from '../components/TiquetsPendentsSupabase';
+import TiquetsResoltsSupabase from '../components/TiquetsResoltsSupabase';
 
 const Panel = () => {
 
@@ -12,52 +13,61 @@ const Panel = () => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const obtenerTiquets = async () => {
-      try {
-        // Realizamos la consulta a la base de datos
-        let { data, error } = await supabase
-          .from('tiquets')
-          .select('*');
-
-        if (error) {
-          setError(error.message);
-        } else {
-          setTiquets(data);
-        }
-      } catch (err) {
-        setError('Hubo un problema al obtener los tiquets: ' + err.message);
-      }
-    };
-
     obtenerTiquets();
   }, []);
 
-  console.log(tiquets)
+  const obtenerTiquets = async () => {
+    try {
+      let { data, error } = await supabase
+        .from('tiquets')
+        .select(`
+          *,
+          users (nombre)`);
 
-  const [tickets, setTickets] = useState(JSON.parse(localStorage.getItem('dades_tiquets')));
-  // Función para borrar un ticket
-  const borrarTickets = (codigo) => {
-    // Filtrar el ticket por código y actualizar localStorage
-    const ticketsGuardados = [...tickets];
-    const ticketsFiltrados = ticketsGuardados.filter(ticket => ticket.codigo != codigo);
-    // Guardar los tickets filtrados en el localStorage y en el estado
-    localStorage.setItem('dades_tiquets', JSON.stringify(ticketsFiltrados));
-    setTickets(ticketsFiltrados); // Actualizar el estado con los tickets filtrados
-  }
-
-  const resolverTickets = (codigo) => {
-    const ticketsGuardados = [...tickets];
-    const ticketsActualizados = ticketsGuardados.map(ticket => {
-      if (ticket.codigo == codigo) {
-        ticket.estado = 'true';
-        ticket.fechaResuelto = new Date().toLocaleDateString();
+      if (error) {
+        setError(error.message);
+      } else {
+        setTiquets(data);
+        console.log(data)
       }
-      return ticket
-    })
-    localStorage.setItem('dades_tiquets', JSON.stringify(ticketsActualizados));
-    setTickets(ticketsActualizados);
+    } catch (err) {
+      setError('Hubo un problema al obtener los tiquets: ' + err.message);
+    }
+  };
+
+  const resolverTickets = async (codigo) => {
+    try {
+      const { data, error } = await supabase
+        .from('tiquets')
+        .update({ estado: true, fecha_resuelto: new Date() })
+        .eq('id', codigo);
+
+      if (error) {
+        console.error('Error al resolver el ticket:', error.message);
+      } else {
+        obtenerTiquets(); 
+      }
+    } catch (err) {
+      console.error('Hubo un problema al resolver el ticket:', err.message);
+    }
   }
 
+  const borrarTickets = async (codigo) => {
+    try {
+      const { data, error } = await supabase
+        .from('tiquets')
+        .delete()
+        .eq('id', codigo);
+
+      if (error) {
+        console.error('Error al borrar el ticket:', error.message);
+      } else {
+        obtenerTiquets();
+      }
+    } catch (err) {
+      console.error('Hubo un problema al borrar el ticket:', err.message);
+    }
+  }
 
   return (
     <>
@@ -80,7 +90,11 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets} resolverTickets={resolverTickets} />
+            <TiquetsPendentsSupabase tickets={tiquets} borrarTickets={borrarTickets} resolverTickets={resolverTickets} />
+            {/* <tr>
+            <td>haaaaaa</td>
+          </tr>
+            <TiquetsPendents tickets={tickets} borrarTickets={borrarTickets} resolverTickets={resolverTickets} /> */}
           </tbody>
         </table>
         <h2 className="mt-5">Tickets resueltos</h2>
@@ -98,7 +112,11 @@ const Panel = () => {
             </tr>
           </thead>
           <tbody>
-            <TiquetsResolts tickets={tickets} borrarTickets={borrarTickets} />
+            <TiquetsResoltsSupabase tickets={tiquets} borrarTickets={borrarTickets} />
+            {/* <tr>
+            <td>haaaaaa</td>
+          </tr>
+            <TiquetsResolts tickets={tickets} borrarTickets={borrarTickets} /> */}
           </tbody>
         </table>
       </main>
