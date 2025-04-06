@@ -1,59 +1,98 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabase/auth'; // Asegúrate que el path es correcto
 
 const Usuario = () => {
+  const [usuarios, setUsuarios] = useState([]);
+  const [error, setError] = useState(null);
 
-    const [usuarios, setUsuarios] = useState(JSON.parse(localStorage.getItem("dades_usuaris")))
+  // Obtener los usuarios desde Supabase
+  const obtenerUsuarios = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*');
 
-
-    const cambiarRol = (idUsuario, rolNuevo) =>{
-
-        const datosGuardados = [...usuarios]
-        const usuariosActualizados = datosGuardados.map(usuario =>{
-            if(usuario.id == idUsuario){
-                usuario.rol = rolNuevo
-            }
-            return usuario
-        })
-        localStorage.setItem("dades_usuaris", JSON.stringify(usuariosActualizados))
-        setUsuarios(usuariosActualizados)
-
+      if (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        setError('No se pudieron cargar los usuarios.');
+      } else {
+        setUsuarios(data);
+      }
+    } catch (err) {
+      console.error('Error inesperado:', err.message);
+      setError('Error inesperado al cargar usuarios.');
     }
+  };
 
+  useEffect(() => {
+    obtenerUsuarios();
+  }, []);
 
-    return (
-       <div style={{justifyContent: "center", display: "flex", marginTop: "50px"}}>
-         <table className="table table-bordered" style={{width: "1300px"}}>
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Apellido</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Contraseña</th>
-                    <th scope="col">Rol</th>
-                </tr>
-            </thead>
-            <tbody>
-            {usuarios && usuarios.map((usuario, index) => (
-                        <tr key={index}>
-                            <th scope="row">{usuario.id}</th>
-                            <td>{usuario.usuario}</td>
-                            <td>{usuario.apellido}</td>
-                            <td>{usuario.email}</td>
-                            <td>{usuario.password}</td>
-                            <td>
-                                <select value={usuario.rol} style={{width: "100%"}} onChange={(evento) => cambiarRol(usuario.id, evento.target.value)}>
-                                    <option value="alumno">Alumno</option>
-                                    <option value="profesor">Profesor</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </td>
-                        </tr>
-                    ))}
-            </tbody>
-        </table>
-       </div>
-    )
-}
+  // Cambiar el rol en Supabase
+  const cambiarRol = async (idUsuario, rolNuevo) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ rol: rolNuevo })
+        .eq('id_user', idUsuario);
 
-export default Usuario
+      if (error) {
+        console.error('Error al cambiar el rol:', error.message);
+        return;
+      }
+
+      // Actualizar la lista local
+      const usuariosActualizados = usuarios.map(usuario =>
+        usuario.id_user === idUsuario ? { ...usuario, rol: rolNuevo } : usuario
+      );
+      setUsuarios(usuariosActualizados);
+    } catch (err) {
+      console.error('Error inesperado al cambiar rol:', err.message);
+    }
+  };
+
+  return (
+    <div style={{ justifyContent: "center", display: "flex", marginTop: "50px" }}>
+      <table className="table table-bordered" style={{ width: "1300px" }}>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {usuarios.map((usuario) => (
+            <tr key={usuario.id_user}>
+              <td>{usuario.id_user}</td>
+              <td>{usuario.nombre}</td>
+              <td>{usuario.apellido}</td>
+              <td>{usuario.email}</td>
+              <td>
+                <select
+                  value={usuario.rol}
+                  style={{ width: "100%" }}
+                  onChange={(e) => cambiarRol(usuario.id_user, e.target.value)}
+                >
+                  <option value="alumno">Alumno</option>
+                  <option value="profesor">Profesor</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {error && (
+        <div className="alert alert-danger mt-3" style={{ width: '80%' }}>
+          {error}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Usuario;
